@@ -1,0 +1,114 @@
+[
+  {
+    "id": "ataque_aranazo",
+    "nombre": "Arañazo",
+    "tipo": "normal",
+    "potencia": 40,
+    "precision": 100
+  },
+  {
+    "id": "ataque_ascuas",
+    "nombre": "Ascuas",
+    "tipo": "fuego",
+    "potencia": 45,
+    "precision": 100
+  },
+  {
+    "id": "ataque_cuchillada",
+    "nombre": "Cuchillada",
+    "tipo": "normal",
+    "potencia": 60,
+    "precision": 90
+  },
+  {
+    "id": "ataque_giro_fuego",
+    "nombre": "Giro Fuego",
+    "tipo": "fuego",
+    "potencia": 75,
+    "precision": 75
+  },
+  {
+    "id": "ataque_placaje",
+    "nombre": "Placaje",
+    "tipo": "normal",
+    "potencia": 40,
+    "precision": 100
+  },
+  {
+    "id": "ataque_pistola_agua",
+    "nombre": "Pistola Agua",
+    "tipo": "agua",
+    "potencia": 45,
+    "precision": 100
+  },
+  {
+    "id": "ataque_burbuja",
+    "nombre": "Burbuja",
+    "tipo": "agua",
+    "potencia": 55,
+    "precision": 90
+  },
+  {
+    "id": "ataque_mordisco",
+    "nombre": "Mordisco",
+    "tipo": "normal",
+    "potencia": 70,
+    "precision": 80
+  },
+  {
+    "id": "ataque_impactrueno",
+    "nombre": "Impactrueno",
+    "tipo": "electrico",
+    "potencia": 45,
+    "precision": 100
+  },
+  {
+    "id": "ataque_rapido",
+    "nombre": "Ataque Rápido",
+    "tipo": "normal",
+    "potencia": 50,
+    "precision": 100
+  },
+  {
+    "id": "ataque_rayo",
+    "nombre": "Rayo",
+    "tipo": "electrico",
+    "potencia": 70,
+    "precision": 85
+  },
+  {
+    "id": "ataque_golpe_cuerpo",
+    "nombre": "Golpe Cuerpo",
+    "tipo": "normal",
+    "potencia": 80,
+    "precision": 75
+  },
+  {
+    "id": "ataque_latigo_cepa",
+    "nombre": "Látigo Cepa",
+    "tipo": "planta",
+    "potencia": 45,
+    "precision": 100
+  },
+  {
+    "id": "ataque_hoja_afilada",
+    "nombre": "Hoja Afilada",
+    "tipo": "planta",
+    "potencia": 60,
+    "precision": 90
+  },
+  {
+    "id": "ataque_bomba_germen",
+    "nombre": "Bomba Germen",
+    "tipo": "planta",
+    "potencia": 70,
+    "precision": 80
+  },
+  {
+    "id": "ataque_derribo",
+    "nombre": "Derribo",
+    "tipo": "normal",
+    "potencia": 80,
+    "precision": 75
+  }
+]

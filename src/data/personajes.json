@@ -1,0 +1,62 @@
+[
+  {
+    "id": "pokemon_charmander",
+    "nombre": "Charmander",
+    "tipo": "fuego",
+    "vidaMaxima": 90,
+    "ataque": 52,
+    "defensa": 43,
+    "velocidad": 65,
+    "ataquesDisponibles": [
+      "ataque_aranazo",
+      "ataque_ascuas",
+      "ataque_cuchillada",
+      "ataque_giro_fuego"
+    ]
+  },
+  {
+    "id": "pokemon_squirtle",
+    "nombre": "Squirtle",
+    "tipo": "agua",
+    "vidaMaxima": 100,
+    "ataque": 48,
+    "defensa": 65,
+    "velocidad": 43,
+    "ataquesDisponibles": [
+      "ataque_placaje",
+      "ataque_pistola_agua",
+      "ataque_burbuja",
+      "ataque_mordisco"
+    ]
+  },
+  {
+    "id": "pokemon_pikachu",
+    "nombre": "Pikachu",
+    "tipo": "electrico",
+    "vidaMaxima": 80,
+    "ataque": 55,
+    "defensa": 40,
+    "velocidad": 90,
+    "ataquesDisponibles": [
+      "ataque_impactrueno",
+      "ataque_rapido",
+      "ataque_rayo",
+      "ataque_golpe_cuerpo"
+    ]
+  },
+  {
+    "id": "pokemon_bulbasaur",
+    "nombre": "Bulbasaur",
+    "tipo": "planta",
+    "vidaMaxima": 100,
+    "ataque": 49,
+    "defensa": 49,
+    "velocidad": 45,
+    "ataquesDisponibles": [
+      "ataque_placaje",
+      "ataque_latigo_cepa",
+      "ataque_hoja_afilada",
+      "ataque_bomba_germen"
+    ]
+  }
+]
