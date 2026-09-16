@@ -16,7 +16,8 @@ tp-batallas/
 │   │   ├── BarraVida.vue
 │   │   ├── ListaAtaques.vue
 │   │   └── RegistroTurnos.vue
-│   │
+│   ├── models/
+│   │   └── PokemonBatalla.js (4)
 │   ├── data/
 │   │   ├── personajes.json   (1)
 │   │   └── ataques.json  (2)

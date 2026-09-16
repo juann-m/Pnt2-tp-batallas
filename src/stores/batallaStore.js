@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-
+import { PokemonBatalla } from "../models/PokemonBatallaokemonBatalla"
 import ataques from "../data/ataques.json"
 
 import {
@@ -31,26 +31,24 @@ function estadoInicialBatalla() {
 // Esto ocurre antes de iniciar una nueva batalla.
 
 const accionesBatalla = {
-  iniciarBatalla(personajeJugador, personajeRival) {
-    this.$reset()
+ iniciarBatalla(personajeJugador, personajeRival) {
+  this.$reset()
 
-    this.pokemonJugador = {
-      ...structuredClone(personajeJugador),
-      vidaActual: personajeJugador.vidaMaxima
-    }
+  this.pokemonJugador = new PokemonBatalla(
+    personajeJugador
+  )
 
-    this.pokemonRival = {
-      ...structuredClone(personajeRival),
-      vidaActual: personajeRival.vidaMaxima
-    }
+  this.pokemonRival = new PokemonBatalla(
+    personajeRival
+  )
 
-    this.turnoActual = decidirPrimerTurno(
-      this.pokemonJugador,
-      this.pokemonRival
-    )
+  this.turnoActual = decidirPrimerTurno(
+    this.pokemonJugador,
+    this.pokemonRival
+  )
 
-    this.estado = "en_curso"
-  },
+  this.estado = "en_curso"
+},
 
 
   realizarAtaque(ataqueId) {
