@@ -29,7 +29,7 @@ tp-batallas/
 │   │   └── index.js
 │   │
 │   ├── stores/
-│   │   └── batallaStore.js (4)
+│   │   └── batallaStore.js (5)
 │   │
 │   ├── views/
 │   │   ├── InicioView.vue

@@ -1,4 +1,5 @@
-export class PokemonBatalla {
+
+export class pokemonBatalla {
   constructor(personajeOriginal) {
     this.id = personajeOriginal.id
     this.nombre = personajeOriginal.nombre

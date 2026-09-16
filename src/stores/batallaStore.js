@@ -1,5 +1,6 @@
 import { defineStore } from "pinia"
-import { PokemonBatalla } from "../models/PokemonBatallaokemonBatalla"
+import { pokemonBatalla } from "../models/PokemonBatalla"
+
 import ataques from "../data/ataques.json"
 
 import {
@@ -34,11 +35,11 @@ const accionesBatalla = {
  iniciarBatalla(personajeJugador, personajeRival) {
   this.$reset()
 
-  this.pokemonJugador = new PokemonBatalla(
+  this.pokemonJugador = new pokemonBatalla(
     personajeJugador
   )
 
-  this.pokemonRival = new PokemonBatalla(
+  this.pokemonRival = new pokemonBatalla(
     personajeRival
   )
 
