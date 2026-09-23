@@ -25,21 +25,36 @@ export function calcularDano(personajeAtacante, personajeDefensor, ataqueSelecci
 }
 
 
-// Decide quién realiza el primer ataque.
-export function decidirPrimerTurno(pokemonJugador, pokemonRival) {
+// Decide quién realiza el primer ataque de cada ronda.
+export function decidirPrimerAtacanteDeRonda(pokemonJugador, pokemonRival) {
+
+  const resultadoAleatorio = Math.random();
+
+  // 15% de las veces se decide al azar
+  if (resultadoAleatorio < 0.15) {
+
+    const decisionAleatoria = Math.random();
+
+    if (decisionAleatoria < 0.5) {
+      return "jugador";
+    } else {
+      return "rival";
+    }
+  } 
+
+  // El 85% restante manda la velocidad
   if (pokemonJugador.velocidad > pokemonRival.velocidad) {
-    return "jugador"
+    return "jugador";
+
+  } else if (pokemonRival.velocidad > pokemonJugador.velocidad) {
+    return "rival";
+
+  } else {
+    // misma velocidad
+    if (Math.random() < 0.5) {
+      return "jugador";
+    } else {
+      return "rival";
+    }
   }
-
-  if (pokemonRival.velocidad > pokemonJugador.velocidad) {
-    return "rival"
-  }
-
-  const resultadoAleatorio = Math.random()
-
-  if (resultadoAleatorio < 0.5) {
-    return "jugador"
-  }
-
-  return "rival"
 }

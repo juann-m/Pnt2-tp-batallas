@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { pokemonBatalla } from "../models/PokemonBatalla"
+import { pokemonBatalla } from "../models/pokemonBatalla"
 
 import ataques from "../data/ataques.json"
 

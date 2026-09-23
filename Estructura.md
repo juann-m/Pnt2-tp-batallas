@@ -32,6 +32,7 @@ tp-batallas/
 │   │   └── batallaStore.js (5)
 │   │
 │   ├── views/
+│   │   ├── LoginView.vue (6)
 │   │   ├── InicioView.vue
 │   │   ├── SeleccionPokemonView.vue
 │   │   ├── BatallaView.vue
