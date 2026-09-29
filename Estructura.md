@@ -1,11 +1,5 @@
 tp-batallas/
 ├── public/
-│   └── imagenes/
-│       └── pokemon/
-│           ├── charmander.png
-│           ├── squirtle.png
-│           ├── pikachu.png
-│           └── bulbasaur.png
 │
 ├── src/
 │   ├── assets/
@@ -31,10 +25,13 @@ tp-batallas/
 │   ├── stores/
 │   │   └── batallaStore.js (5)
 │   │
+│   ├── services/
+│   │   └── pokemonApi.js (7)
+│   │
 │   ├── views/
 │   │   ├── LoginView.vue (6)
 │   │   ├── InicioView.vue
-│   │   ├── SeleccionPokemonView.vue
+│   │   ├── SeleccionPokemonView.vue (8)
 │   │   ├── BatallaView.vue
 │   │   └── ResultadoView.vue
 │   │

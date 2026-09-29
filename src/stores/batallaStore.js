@@ -11,8 +11,9 @@ import {
 
 
 // Para usar Pinia defino:
-// 1. Estado inicial.
-// 2. Acciones que modifican el estado. Esto se hace en un objeto. 
+// 1. Estado inicial. = STATE 
+// 2. Acciones que modifican el estado. Esto se hace en un objeto.  = ACTIONS
+// 3. Configuro Pinia con el estado y las acciones.
 
 // (1) - Función que devuelve el estado inicial.
 function estadoInicialBatalla() {
@@ -138,7 +139,8 @@ const accionesBatalla = {
 }
 
 
-// Objeto de configuración que reúne las partes anteriores.
+//(3) - Objeto de configuración que reúne las partes anteriores.
+
 const configuracion = {
   state: estadoInicialBatalla,
   actions: accionesBatalla
