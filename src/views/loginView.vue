@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
+const router = useRouter()  
 const usuario = ref("")
 const password = ref("")
 const isLoading = ref(false)
@@ -15,6 +17,8 @@ function iniciarSesion() {
   try {
     if (usuario.value === "juan" && password.value === "1234") {
       loginExitoso.value = true
+      localStorage.setItem('isLoggedIn', 'true')
+      router.push('/seleccionPokemon')
     } else {
       error.value = "Usuario o contraseña incorrectos."
     }

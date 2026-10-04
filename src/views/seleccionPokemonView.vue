@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted } from "vue"
-
 import personajes from "../data/personajes.json"
 import { obtenerImagenPokemon } from "../services/pokemonApi"
 import TarjetaPokemon from "../components/tarjetaPokemon.vue"

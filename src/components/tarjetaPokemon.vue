@@ -1,26 +1,41 @@
-<script setup>
-defineProps({
-  personaje: {
-    type: Object,
-    required: true
-  },
-  seleccionado: {
-    type: Boolean,
-    default: false
-  }
-})
+<script>
+export default {
 
-defineEmits(["seleccionar"])
+  // Props declara los datos que el componente espera recibir de su padre. 
+  // En este caso, se espera un objeto "personaje" y un booleano "seleccionado".
+
+  props: {
+    personaje: {
+      type: Object,
+      required: true
+    },
+    seleccionado: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  emits: ["seleccionar"],
+
+  methods: {
+    seleccionarEstaTarjeta() {
+      this.$emit("seleccionar", this.personaje)
+    }
+  }
+}
 </script>
 
 <template>
   <button
     type="button"
     class="tarjeta-pokemon"
-    :class="{ seleccionada: seleccionado }"
-    @click="$emit('seleccionar', personaje)"
+    v-bind:class="{ seleccionada: seleccionado }"
+    v-on:click="seleccionarEstaTarjeta"
   >
-    <img :src="personaje.imagen" :alt="personaje.nombre">
+    <img
+      v-bind:src="personaje.imagen"
+      v-bind:alt="personaje.nombre"
+    >
     <span>{{ personaje.nombre }}</span>
   </button>
 </template>
