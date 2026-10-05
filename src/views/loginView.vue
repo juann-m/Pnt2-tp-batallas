@@ -26,6 +26,11 @@ function iniciarSesion() {
     isLoading.value = false
   }
 }
+
+function irACrearUsuario() {
+  router.push("/crearUsuario")
+}
+
 </script>
 
 <template>
@@ -41,6 +46,12 @@ function iniciarSesion() {
     <button type="submit" :disabled="isLoading">
       Ingresar
     </button>
+
+    <button type="button" @click="irACrearUsuario">
+    Crear usuario
+    </button>
+
+
   </form>
 
   <p v-if="error">{{ error }}</p>
