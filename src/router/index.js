@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
+import { useAuthStore } from '@/stores/auth'
 //router es el array de rutas que va a tener la app, cada ruta tiene un path y un componente asociado
 
 
@@ -36,22 +36,19 @@ const router = createRouter({
 //  además vamos a validar si el usuario está logueado antes de permitirle acceder a ciertas rutas
 
 router.beforeEach((to) => {
-    console.log('Navegando a: ' + to.path)
+  const authStore = useAuthStore() // Instancia activa de Pinia
 
-    // título de la pestaña
-    document.title = to.meta.title ? to.meta.title : 'Batallas Pokémon'
+  document.title = to.meta.title ? to.meta.title : 'Batallas Pokémon'
 
-    const estaLogueado = localStorage.getItem('isLoggedIn') === 'true'
+  // Si la ruta requiere auth y no está logueado en Pinia
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    return '/'
+  }
 
-    // si la ruta requiere auth y no está logueado -> al login
-    if (to.meta.requiresAuth && !estaLogueado) {
-        return '/'
-    }
-
-    // si ya está logueado y quiere ir al login -> directo a seleccionar pokemon
-    if (to.path === '/' && estaLogueado) {
-        return '/seleccionPokemon'
-    }
+  // Si ya está logueado y quiere ir al login
+  if (to.path === '/' && authStore.isLoggedIn) {
+    return '/seleccionPokemon'
+  }
 })
 
 export default router

@@ -1,0 +1,188 @@
+/* index.css */
+
+:root {
+  --poke-rojo: #ee1515;
+  --poke-rojo-osc: #c00e0e;
+  --poke-amarillo: #ffcb05;
+  --poke-azul: #2a75bb;
+  --poke-azul-osc: #3c5aa6;
+  --gris-bg: #f2f2f2;
+  --gris-borde: #d9d9d9;
+  --texto: #2b2b2b;
+  --error: #d32f2f;
+  --exito: #2e7d32;
+  --radio: 12px;
+  --sombra: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: var(--texto);
+  /* fondo degradé estilo Pokébola */
+  background: linear-gradient(160deg, var(--poke-azul) 0%, var(--poke-azul-osc) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+h1 {
+  color: #fff;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 var(--poke-azul-osc);
+  margin: 0;
+}
+
+/* la card del login */
+form {
+  background: #fff;
+  width: 100%;
+  max-width: 360px;
+  padding: 28px 24px;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  border-top: 8px solid var(--poke-rojo);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+input {
+  padding: 10px 12px;
+  border: 2px solid var(--gris-borde);
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  border-color: var(--poke-azul);
+  box-shadow: 0 0 0 3px rgba(42, 117, 187, 0.2);
+}
+
+button {
+  margin-top: 12px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.05s, background-color 0.2s, opacity 0.2s;
+}
+
+/* primer botón = Ingresar (submit) */
+button[type="submit"] {
+  background: var(--poke-rojo);
+  color: #fff;
+}
+button[type="submit"]:hover:not(:disabled) {
+  background: var(--poke-rojo-osc);
+}
+
+/* segundo botón = Crear usuario */
+button[type="button"] {
+  background: var(--poke-amarillo);
+  color: var(--texto);
+}
+button[type="button"]:hover {
+  background: #e6b800;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* mensajes de estado */
+p {
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  background: #fff;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+/* error: el <p v-if="error"> */
+form ~ p:first-of-type {
+  color: var(--error);
+  border-left: 4px solid var(--error);
+}
+
+
+/* ===== banner superior ===== */
+.barra-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  /* rompe el padding del <main> para ir de borde a borde */
+  margin: -12px -12px 20px;
+  padding: 14px 20px;
+
+  background: #ee1515;              /* rojo pokébola */
+  border-bottom: 4px solid #ffcb05; /* franja amarilla */
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+
+  position: sticky;                /* queda fija arriba al scrollear */
+  top: 0;
+  z-index: 10;
+}
+
+/* título dentro del banner, en blanco */
+.barra-superior h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 0 #c00e0e;
+}
+
+.sesion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* saludo en blanco para contrastar con el rojo */
+.sesion span {
+  font-weight: 600;
+  color: #fff;
+}
+
+.sesion button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #ffcb05;
+  color: #2b2b2b;
+  transition: background-color 0.2s, transform 0.05s;
+}
+.sesion button:hover  { background: #e6b800; }
+.sesion button:active { transform: scale(0.97); }

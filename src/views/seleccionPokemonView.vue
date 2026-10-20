@@ -1,70 +1,85 @@
 <script setup>
-import { ref, onMounted, computed } from "vue"
-import personajes from "../data/personajes.json"
-import TarjetaPokemon from "../components/tarjetaPokemon.vue"
-import { obtenerDatosPokemon } from "../services/pokemonApi.js"
-import { PokemonSeleccionable } from "../models/pokemonSeleccionable.js"
-import ataquesPorPokemon from "../data/ataquesPorPokemon.json"
+import { ref, onMounted, computed } from "vue";
+import personajes from "../data/personajes.json";
+import TarjetaPokemon from "../components/tarjetaPokemon.vue";
+import { obtenerDatosPokemon } from "../services/pokemonApi.js";
+import { PokemonSeleccionable } from "../models/pokemonSeleccionable.js";
+import ataquesPorPokemon from "../data/ataquesPorPokemon.json";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
-const pokemonesSeleccionables = ref([])
-const pokemonSeleccionado = ref(null)
-const cargando = ref(true)
-const error =  ref("")
-const ESCALA_ESTADISTICAS = 100
+const pokemonesSeleccionables = ref([]);
+const pokemonSeleccionado = ref(null);
+const cargando = ref(true);
+const error = ref("");
+const ESCALA_ESTADISTICAS = 100;
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+function cerrarSesion() {
+  authStore.logout(); // Pinia limpia estado + localStorage
+  router.push("/"); // volvés al login
+}
 
 onMounted(async () => {
   try {
     for (const nombrePokemon of personajes) {
-      const datosPokemon = await obtenerDatosPokemon(nombrePokemon)
-      const ataques = ataquesPorPokemon[nombrePokemon]
+      const datosPokemon = await obtenerDatosPokemon(nombrePokemon);
+      const ataques = ataquesPorPokemon[nombrePokemon];
 
-      const pokemon = new PokemonSeleccionable(datosPokemon, ataques)
-      pokemonesSeleccionables.value.push(pokemon)
+      const pokemon = new PokemonSeleccionable(datosPokemon, ataques);
+      pokemonesSeleccionables.value.push(pokemon);
     }
   } catch (errorRecibido) {
-    error.value = errorRecibido.message
+    error.value = errorRecibido.message;
   } finally {
-    cargando.value = false
+    cargando.value = false;
   }
-})
+});
 
 function seleccionarPokemon(pokemon) {
-  pokemonSeleccionado.value = pokemon
+  pokemonSeleccionado.value = pokemon;
 }
 
 const estadisticasSeleccionadas = computed(function () {
-  const pokemon = pokemonSeleccionado.value
+  const pokemon = pokemonSeleccionado.value;
 
   if (!pokemon) {
-    return []
+    return [];
   }
 
   const estadisticas = [
     { nombre: "Vida", clave: "vidaMaxima" },
     { nombre: "Ataque", clave: "ataque" },
     { nombre: "Defensa", clave: "defensa" },
-    { nombre: "Velocidad", clave: "velocidad" }
-  ]
+    { nombre: "Velocidad", clave: "velocidad" },
+  ];
 
   return estadisticas.map(function (estadistica) {
-    const valor = pokemon[estadistica.clave]
+    const valor = pokemon[estadistica.clave];
 
     return {
       nombre: estadistica.nombre,
       valor: valor,
-      porcentaje: (valor / ESCALA_ESTADISTICAS) * 100
-    }
-  })
-})
+      porcentaje: (valor / ESCALA_ESTADISTICAS) * 100,
+    };
+  });
+});
 </script>
 
 <template>
   <main>
-    <h1>Seleccioná tu Pokémon</h1>
+    <header class="barra-superior">
+      <h1>Seleccioná tu Pokémon</h1>
 
-    <p v-if="cargando" class="mensaje">
-      Cargando Pokémon...
-    </p>
+      <div class="sesion">
+        <span v-if="authStore.usuario">Hola, {{ authStore.usuario }}</span>
+        <button type="button" @click="cerrarSesion">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <p v-if="cargando" class="mensaje">Cargando Pokémon...</p>
 
     <p v-else-if="error" class="mensaje error">
       {{ error }}

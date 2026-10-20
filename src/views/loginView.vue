@@ -2,6 +2,7 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { validarLogin } from "@/services/usuariosApi"
+import { useAuthStore } from "@/stores/auth"
 
 const router = useRouter()
 const usuario = ref("")
@@ -9,6 +10,7 @@ const password = ref("")
 const isLoading = ref(false)
 const error = ref("")
 const loginExitoso = ref(false)
+const authStore = useAuthStore()
 
 async function iniciarSesion() {
   isLoading.value = true
@@ -19,13 +21,11 @@ async function iniciarSesion() {
     // validamos contra los usuarios mockeados en Mockachino
     const usuarioValido = await validarLogin(usuario.value, password.value)
 
-    if (usuarioValido) {
-      loginExitoso.value = true
-      localStorage.setItem("isLoggedIn", "true")
-      localStorage.setItem("usuario", usuarioValido.first_name)
-      // redirige a la selección de pokemon
-      router.push("/seleccionPokemon")
-    } else {
+ if (usuarioValido) {
+  loginExitoso.value = true
+  authStore.login(usuarioValido.first_name) // Guardas estado en Pinia y localStorage limpio
+  router.push("/seleccionPokemon")
+}else {
       error.value = "Usuario o contraseña incorrectos."
     }
   } catch (e) {
