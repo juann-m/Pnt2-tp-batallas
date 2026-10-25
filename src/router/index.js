@@ -18,7 +18,19 @@ const routes = [
         path: '/seleccionPokemon',
         component: () => import('../views/seleccionPokemonView.vue'),
         meta: { title: 'Seleccionar Pokémon', requiresAuth: true }
-    }
+    },
+    {
+    path: '/batallaPokemon',
+    component: () => import('../views/batallaPokemonView.vue'),
+    meta: { title: 'Batalla Pokémon', requiresAuth: true }
+    },
+    {
+    path: "/seleccionPokemonRival",
+    component: () => import("../views/seleccionPokemonRival.vue"),
+    meta: { title: "Elegir Pokémon rival", requiresAuth: true },
+    },
+
+
 ]
 
 // el objeto router es el que se va a pasar a la app para que pueda usar las rutas definidas

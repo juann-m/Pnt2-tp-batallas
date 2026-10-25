@@ -6,7 +6,7 @@ import ataques from "../data/ataques.json"
 import {
   comprobarPrecision,
   calcularDano,
-  decidirPrimerTurno
+  decidirPrimerAtacanteDeRonda
 } from "../logic/batallaLogic"
 
 
@@ -44,7 +44,7 @@ const accionesBatalla = {
     personajeRival
   )
 
-  this.turnoActual = decidirPrimerTurno(
+  this.turnoActual = decidirPrimerAtacanteDeRonda(
     this.pokemonJugador,
     this.pokemonRival
   )

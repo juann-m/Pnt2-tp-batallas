@@ -66,6 +66,23 @@ const estadisticasSeleccionadas = computed(function () {
     };
   });
 });
+
+// Función para ir a la vista de selección de Pokémon rival
+
+function irASeleccionPokemonRival() {
+  const pokemon = pokemonSeleccionado.value;
+
+  if (!pokemon) {
+    return;
+  }
+
+  router.push({
+    path: "/seleccionPokemonRival",
+    query: { pokemonJugador: String(pokemon.id) },
+  });
+}
+
+
 </script>
 
 <template>
@@ -115,6 +132,10 @@ const estadisticasSeleccionadas = computed(function () {
           ></div>
         </div>
       </div>
+
+       <button type="button" @click="irASeleccionPokemonRival">
+        Comenzar batalla
+      </button>
     </section>
   </main>
 </template>
