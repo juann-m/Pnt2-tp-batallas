@@ -61,4 +61,8 @@ export default {
 .tarjeta-pokemon.seleccionada {
   border-color: #2e8b57;
 }
+
+.tarjeta-pokemon:active {
+  transform: none;
+}
 </style>

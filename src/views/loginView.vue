@@ -61,6 +61,8 @@ function irACrearUsuario() {
 
   </form>
 
+  <router-link to="/ranking">Ver ranking</router-link>
+
   <p v-if="error">{{ error }}</p>
   <p v-if="loginExitoso">¡Bienvenido, {{ usuario }}!</p>
 </template>

@@ -91,6 +91,7 @@ function irASeleccionPokemonRival() {
       <h1>Seleccioná tu Pokémon</h1>
 
       <div class="sesion">
+        <router-link to="/ranking">Ver ranking</router-link>
         <span v-if="authStore.usuario">Hola, {{ authStore.usuario }}</span>
         <button type="button" @click="cerrarSesion">Cerrar sesión</button>
       </div>
