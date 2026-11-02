@@ -189,36 +189,74 @@ onBeforeUnmount(() => {
   <main class="pantalla-batalla">
     <header class="barra-superior">
       <h1>Batalla Pokémon</h1>
+
       <div class="sesion">
-        <span v-if="authStore.usuario">Hola, {{ authStore.usuario }}</span>
-        <button type="button" @click="cerrarSesion">Cerrar sesión</button>
+        <span v-if="authStore.usuario">
+          Hola, {{ authStore.usuario }}
+        </span>
+
+        <button
+          type="button"
+          @click="cerrarSesion"
+        >
+          Cerrar sesión
+        </button>
       </div>
     </header>
 
-    <section class="arena" aria-label="Campo de batalla">
+    <section
+      class="arena"
+      aria-label="Campo de batalla"
+    >
+      <!-- Pokémon rival -->
       <article class="tarjeta tarjeta-rival">
         <div class="datos-pokemon">
           <p class="etiqueta">RIVAL</p>
+
           <h2>{{ pokemonRival?.nombre }}</h2>
-          <span class="tipo-pokemon">{{ pokemonRival?.tipo }}</span>
+
+          <span class="tipo-pokemon">
+            {{ pokemonRival?.tipo }}
+          </span>
+
           <div class="vida-pokemon">
             <div class="texto-vida">
               <span>VIDA</span>
-              <strong>{{ pokemonRival?.vidaActual }} / {{ pokemonRival?.vidaMaxima }}</strong>
+
+              <strong>
+                {{ pokemonRival?.vidaActual }} /
+                {{ pokemonRival?.vidaMaxima }}
+              </strong>
             </div>
+
             <div class="fondo-vida">
               <div
                 class="barra-vida"
                 :class="claseBarraVida(pokemonRival)"
-                :style="{ width: porcentajeVida(pokemonRival) + '%' }"
+                :style="{
+                  width:
+                    porcentajeVida(pokemonRival) + '%',
+                }"
               ></div>
             </div>
           </div>
         </div>
-        <img v-if="imagenRival" :src="imagenRival" :alt="pokemonRival?.nombre" />
-        <span v-else class="sin-imagen">?</span>
+
+        <img
+          v-if="imagenRival"
+          :src="imagenRival"
+          :alt="pokemonRival?.nombre"
+        />
+
+        <span
+          v-else
+          class="sin-imagen"
+        >
+          ?
+        </span>
       </article>
 
+      <!-- Pokémon del jugador -->
       <article class="tarjeta tarjeta-jugador">
         <img
           v-if="imagenJugador"
@@ -226,60 +264,120 @@ onBeforeUnmount(() => {
           :src="imagenJugador"
           :alt="pokemonJugador?.nombre"
         />
-        <span v-else class="sin-imagen">?</span>
+
+        <span
+          v-else
+          class="sin-imagen"
+        >
+          ?
+        </span>
+
         <div class="datos-pokemon">
           <p class="etiqueta">TU POKÉMON</p>
+
           <h2>{{ pokemonJugador?.nombre }}</h2>
-          <span class="tipo-pokemon">{{ pokemonJugador?.tipo }}</span>
+
+          <span class="tipo-pokemon">
+            {{ pokemonJugador?.tipo }}
+          </span>
+
           <div class="vida-pokemon">
             <div class="texto-vida">
               <span>VIDA</span>
-              <strong>{{ pokemonJugador?.vidaActual }} / {{ pokemonJugador?.vidaMaxima }}</strong>
+
+              <strong>
+                {{ pokemonJugador?.vidaActual }} /
+                {{ pokemonJugador?.vidaMaxima }}
+              </strong>
             </div>
+
             <div class="fondo-vida">
               <div
                 class="barra-vida"
                 :class="claseBarraVida(pokemonJugador)"
-                :style="{ width: porcentajeVida(pokemonJugador) + '%' }"
+                :style="{
+                  width:
+                    porcentajeVida(pokemonJugador) + '%',
+                }"
               ></div>
             </div>
           </div>
         </div>
       </article>
-    </section>
 
-    <section class="panel-acciones" aria-live="polite">
-      <p class="mensaje-batalla">{{ mensajeBatalla }}</p>
+      <!-- Panel ubicado junto al Pokémon del jugador -->
+      <section
+        class="panel-acciones"
+        aria-live="polite"
+      >
+        <p class="mensaje-batalla">
+          {{ mensajeBatalla }}
+        </p>
 
-      <p v-if="fase === 'cargando'" class="estado-batalla">Cargando Pokémon...</p>
+        <p
+          v-if="fase === 'cargando'"
+          class="estado-batalla"
+        >
+          Cargando Pokémon...
+        </p>
 
-      <p v-else-if="fase === 'esperando_rival'" class="estado-batalla">
-        El rival está atacando...
-      </p>
+        <p
+          v-else-if="fase === 'esperando_rival'"
+          class="estado-batalla"
+        >
+          El rival está atacando...
+        </p>
 
-      <div v-else-if="fase === 'en_curso'" class="ataques">
-        <h2>Elegí un ataque</h2>
-        <div class="lista-ataques">
+        <div
+          v-else-if="fase === 'en_curso'"
+          class="ataques"
+        >
+          <h2>Elegí tu ataque</h2>
+
+          <div class="lista-ataques">
+            <button
+              v-for="ataque in ataquesDelJugador"
+              :key="ataque.id"
+              type="button"
+              class="boton-ataque"
+              :disabled="
+                batallaStore.turnoActual !== 'jugador'
+              "
+              @click="
+                realizarAtaqueJugador(ataque.id)
+              "
+            >
+              <strong>{{ ataque.nombre }}</strong>
+
+              <span>
+                {{ ataque.tipo }} · Potencia
+                {{ ataque.potencia }}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          v-else-if="fase === 'terminada'"
+          class="resultado-batalla"
+        >
+          <h2>
+            {{
+              batallaStore.ganador === "jugador"
+                ? "¡Ganaste!"
+                : "Fin de la batalla"
+            }}
+          </h2>
+
           <button
-            v-for="ataque in ataquesDelJugador"
-            :key="ataque.id"
             type="button"
-            class="boton-ataque"
-            :disabled="batallaStore.turnoActual !== 'jugador'"
-            @click="realizarAtaqueJugador(ataque.id)"
+            class="boton-volver"
+            @click="volverASeleccion"
           >
-            <strong>{{ ataque.nombre }}</strong>
-            <span>{{ ataque.tipo }} · Potencia {{ ataque.potencia }}</span>
+            Volver a seleccionar Pokémon
           </button>
         </div>
-      </div>
-
-      <div v-else-if="fase === 'terminada'" class="resultado-batalla">
-        <h2>{{ batallaStore.ganador === "jugador" ? "¡Ganaste!" : "Fin de la batalla" }}</h2>
-        <button type="button" class="boton-volver" @click="volverASeleccion">
-          Volver a seleccionar Pokémon
-        </button>
-      </div>
+      </section>
     </section>
   </main>
 </template>
@@ -288,7 +386,90 @@ onBeforeUnmount(() => {
 .pantalla-batalla { width: min(100%, 1050px); margin: 0 auto; color: var(--texto, #2b2b2b); font-family: "Segoe UI", system-ui, sans-serif; }
 .pantalla-batalla :deep(.barra-superior) { margin: -12px -12px 20px; }
 .barra-superior, .sesion { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.arena { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; min-height: 420px; padding: 24px; border: 5px solid var(--poke-amarillo, #ffcb05); border-radius: 20px; background: linear-gradient(180deg, #e6f1f8 0 49%, #c8e0b7 49% 100%); }
+.arena {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+  min-height: 470px;
+  padding: 20px;
+  border: 5px solid var(--poke-amarillo, #ffcb05);
+  border-radius: 20px;
+  background: linear-gradient(
+    180deg,
+    #e6f1f8 0 49%,
+    #c8e0b7 49% 100%
+  );
+}
+
+.tarjeta-rival {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.tarjeta-jugador {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.panel-acciones {
+  box-sizing: border-box;
+  grid-column: 2;
+  grid-row: 2;
+  align-self: stretch;
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 2px solid #d9d9d9;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 6px 18px rgb(32 48 64 / 12%);
+}
+
+.panel-acciones h2 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+}
+
+.mensaje-batalla {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-left: 4px solid var(--poke-azul, #2a75bb);
+  border-radius: 6px;
+  background: #f2f7fb;
+  font-size: 0.82rem;
+}
+
+.lista-ataques {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.boton-ataque {
+  display: flex;
+  min-width: 0;
+  min-height: 55px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  margin: 0;
+  padding: 9px 10px;
+  border: 2px solid #d9d9d9;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+}
+
+.boton-ataque strong {
+  font-size: 0.88rem;
+}
+
+.boton-ataque span {
+  color: #606c74;
+  font-size: 0.7rem;
+  text-transform: capitalize;
+}
 .tarjeta { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 0; padding: 18px; border: 2px solid #d9d9d9; border-radius: 16px; background: rgb(255 255 255 / 94%); box-shadow: 0 6px 18px rgb(32 48 64 / 12%); }
 .tarjeta-rival { grid-column: 2; grid-row: 1; }
 .tarjeta-jugador { grid-column: 1; grid-row: 2; }
@@ -307,7 +488,6 @@ h2 { margin: 0 0 7px; }
 .tarjeta img { filter: drop-shadow(0 8px 6px rgb(0 0 0 / 18%)); }
 .imagen-jugador { transform: scaleX(-1); }
 .sin-imagen { display: grid; place-items: center; border-radius: 50%; background: #eef2f4; color: #7b8991; font-size: 2.5rem; font-weight: 800; }
-.panel-acciones { margin-top: 18px; padding: 20px; border: 1px solid #d9d9d9; border-top: 7px solid var(--poke-rojo, #ee1515); border-radius: 12px; background: #fff; box-shadow: 0 8px 24px rgb(0 0 0 / 15%); }
 .mensaje-batalla { margin: 0 0 16px; padding: 12px 16px; border-left: 4px solid var(--poke-azul, #2a75bb); background: #f2f7fb; }
 .lista-ataques { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .boton-ataque { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-height: 68px; margin: 0; padding: 12px 14px; border: 2px solid #d9d9d9; background: #fff; color: inherit; text-align: left; }

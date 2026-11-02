@@ -23,21 +23,24 @@ const error = ref("");
 let intervalo = null;
 let temporizador = null;
 
-async function cargarPokemones() {
+onMounted(async () => {
   try {
     const pokemones = [];
 
-    for (const nombre of personajes) {
-      const datos = await obtenerDatosPokemon(nombre);
+    for (const nombrePokemon of personajes) {
+      const datosPokemon = await obtenerDatosPokemon(nombrePokemon);
+      const ataques = ataquesPorPokemon[nombrePokemon];
+
       const pokemon = new PokemonSeleccionable(
-        datos,
-        ataquesPorPokemon[nombre],
+        datosPokemon,
+        ataques,
       );
 
       pokemones.push(pokemon);
     }
 
-    const idJugador = String(route.query.pokemonJugador || "");
+    // Obtener el ID del Pokémon seleccionado desde la query.
+    const idJugador = route.query.pokemonJugador;
 
     pokemonJugador.value = pokemones.find(
       (pokemon) => pokemon.id === idJugador,
@@ -72,7 +75,7 @@ async function cargarPokemones() {
   } finally {
     cargando.value = false;
   }
-}
+});
 
 function sortearRival() {
   if (girando.value || rivalesDisponibles.value.length === 0) {
@@ -113,8 +116,6 @@ function comenzarBatalla() {
   router.push("/batallaPokemon");
 }
 
-onMounted(cargarPokemones);
-
 onBeforeUnmount(() => {
   if (intervalo !== null) {
     window.clearInterval(intervalo);
@@ -128,43 +129,72 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="seleccion-rival">
-    <h1>Elegí a tu rival</h1>
+    <section class="panel-seleccion">
+      <h1 class="titulo">Elegí a tu rival</h1>
 
-    <p v-if="cargando">Cargando Pokémon...</p>
-    <p v-else-if="error" class="error">{{ error }}</p>
+      <p v-if="cargando">Cargando Pokémon...</p>
 
-    <template v-else>
-      <section class="tarjeta jugador">
-        <h2>Tu Pokémon</h2>
-        <img :src="pokemonJugador.imagen" :alt="pokemonJugador.nombre" />
-        <strong>{{ pokemonJugador.nombre }}</strong>
-      </section>
+      <p v-else-if="error" class="error">
+        {{ error }}
+      </p>
 
-      <section class="selector-rival">
-        <h2>
-          {{ rivalElegido ? "¡Este es tu rival!" : "Sorteando rival" }}
-        </h2>
+      <template v-else>
+        <div class="enfrentamiento">
+          <article class="tarjeta-pokemon tarjeta-jugador">
+            <p class="etiqueta">TU POKÉMON</p>
 
-        <article class="tarjeta slot">
-          <img
-            v-if="pokemonMostrado"
-            :src="pokemonMostrado.imagen"
-            :alt="pokemonMostrado.nombre"
-          />
-          <strong>{{ pokemonMostrado?.nombre || "?" }}</strong>
-        </article>
+            <img
+              class="pokemon-imagen pokemon-jugador"
+              :src="pokemonJugador.imagen"
+              :alt="pokemonJugador.nombre"
+            />
 
-        <button
-          v-if="!rivalElegido"
-          type="button"
-          :disabled="girando"
-          @click="sortearRival"
+            <strong>{{ pokemonJugador.nombre }}</strong>
+          </article>
+
+          <div class="versus">VS</div>
+
+          <article class="tarjeta-pokemon tarjeta-rival">
+            <p class="etiqueta">RIVAL</p>
+
+            <img
+              v-if="pokemonMostrado"
+              class="pokemon-imagen"
+              :src="pokemonMostrado.imagen"
+              :alt="pokemonMostrado.nombre"
+            />
+
+            <strong>
+              {{ pokemonMostrado?.nombre || "?" }}
+            </strong>
+          </article>
+
+          <div class="acciones-rival">
+            <button
+              v-if="!rivalElegido"
+              type="button"
+              :disabled="girando"
+              @click="sortearRival"
+            >
+              {{ girando ? "Sorteando..." : "Sortear rival" }}
+            </button>
+
+            <button
+              v-else
+              type="button"
+              @click="comenzarBatalla"
+            >
+              Comenzar batalla
+            </button>
+          </div>
+        </div>
+
+        <section
+          v-if="rivalElegido"
+          class="orden-rivales"
         >
-          {{ girando ? "Sorteando..." : "Sortear rival" }}
-        </button>
+          <h3>Orden de próximos rivales</h3>
 
-        <div v-else>
-          <h3>Orden de rivales si ganás</h3>
           <ol>
             <li
               v-for="pokemon in secuenciaRivales"
@@ -173,67 +203,210 @@ onBeforeUnmount(() => {
               {{ pokemon.nombre }}
             </li>
           </ol>
-
-          <button type="button" @click="comenzarBatalla">
-            Comenzar batalla
-          </button>
-        </div>
-      </section>
-    </template>
+        </section>
+      </template>
+    </section>
   </main>
 </template>
 
 <style scoped>
 .seleccion-rival {
-  max-width: 700px;
-  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #3478bd;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.panel-seleccion {
+  box-sizing: border-box;
+  width: min(720px, 100%);
   padding: 24px;
+  border: 5px solid #ffcb05;
+  border-radius: 20px;
+  background-color: #eaf4fb;
   text-align: center;
 }
 
-.tarjeta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin: 20px auto;
-  padding: 18px;
-  border: 2px solid #d9d9d9;
-  border-radius: 16px;
-  background: white;
+.titulo {
+  margin: 0 0 24px;
+  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-shadow: none;
 }
 
-.tarjeta img {
+/*
+  La grilla separa las tarjetas del botón. Así, el botón del rival
+  no modifica la posición vertical de ninguna de las dos tarjetas.
+*/
+.enfrentamiento {
+  display: grid;
+  grid-template-columns: 230px 70px 230px;
+  grid-template-rows: auto auto;
+  justify-content: center;
+  align-items: center;
+  column-gap: 18px;
+  row-gap: 0;
+}
+
+.tarjeta-jugador {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.versus {
+  grid-column: 2;
+  grid-row: 1;
+  color: #222;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.tarjeta-rival {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.acciones-rival {
+  grid-column: 3;
+  grid-row: 2;
+  min-height: 58px;
+}
+
+.tarjeta-pokemon {
+  box-sizing: border-box;
+  display: flex;
+  width: 230px;
+  height: 242px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  border: 2px solid #d2d2d2;
+  border-radius: 16px;
+  background-color: white;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
+}
+
+.seleccion-rival .pokemon-imagen {
+  display: block;
   width: 140px;
+  max-width: 140px;
   height: 140px;
+  max-height: 140px;
   object-fit: contain;
 }
 
-.jugador {
-  max-width: 220px;
+/* El Pokémon del jugador mira hacia el rival. */
+.seleccion-rival .pokemon-jugador {
+  transform: scaleX(-1);
 }
 
-.slot {
-  max-width: 240px;
-  min-height: 190px;
+.etiqueta {
+  margin: 0;
+  color: #2867b2;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.tarjeta-pokemon strong {
+  color: #222;
+  font-size: 1.15rem;
 }
 
 button {
-  padding: 12px 20px;
+  margin-top: 14px;
+  padding: 11px 20px;
   border: 0;
   border-radius: 10px;
-  background: #ffcb05;
+  background-color: #ffcb05;
   color: #222;
-  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
   cursor: pointer;
 }
 
 button:disabled {
   cursor: wait;
-  opacity: 0.7;
+  opacity: 0.65;
+}
+
+.orden-rivales {
+  margin-top: 12px;
+}
+
+.orden-rivales h3 {
+  margin: 0 0 10px;
+}
+
+.orden-rivales ol {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+}
+
+.orden-rivales li {
+  padding: 7px 10px;
+  border-radius: 8px;
+  background-color: #dceaf5;
 }
 
 .error {
   color: #c0392b;
+}
+
+@media (max-width: 650px) {
+  .seleccion-rival {
+    align-items: flex-start;
+  }
+
+  .enfrentamiento {
+    grid-template-columns: 210px;
+    grid-template-rows: auto auto auto auto;
+    row-gap: 12px;
+  }
+
+  .tarjeta-jugador {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .versus {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 1.5rem;
+  }
+
+  .tarjeta-rival {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .acciones-rival {
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  .tarjeta-pokemon {
+    width: 210px;
+    height: 220px;
+  }
+
+  .seleccion-rival .pokemon-imagen {
+    width: 120px;
+    max-width: 120px;
+    height: 120px;
+    max-height: 120px;
+  }
 }
 </style>
