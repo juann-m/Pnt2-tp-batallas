@@ -5,6 +5,7 @@ import { useBatallaStore } from "@/stores/batallaStore";
 import { useCerrarSesion } from "@/composables/useCerrarSesion";
 import { claseBarraVida, porcentajeVida } from "@/helpers/batalla";
 import { obtenerDatosPokemon } from "@/services/pokemonApi.js";
+import { sumarPunto } from "@/services/rankingApi.js";
 import ataques from "@/data/ataques.json";
 
 const router = useRouter();
@@ -64,6 +65,17 @@ function describirUltimoAtaque() {
     : `${ultimoTurno.atacante} usó ${ultimoTurno.ataque}, pero falló.`;
 }
 
+// suma un punto al ranking si el jugador ganó la batalla que acaba de terminar
+// (al perder no pasa nada: los puntos nunca bajan ni se resetean)
+function actualizarRanking() {
+  const nombreUsuario = usuario.value;
+  if (!nombreUsuario) return;
+
+  if (batallaStore.ganador === "jugador") {
+    sumarPunto(nombreUsuario);
+  }
+}
+
 function programarAtaqueRival() {
   fase.value = "esperando_rival";
   temporizador = window.setTimeout(realizarAtaqueRival, 800);
@@ -83,6 +95,7 @@ function realizarAtaqueRival() {
   describirUltimoAtaque();
 
   if (batallaStore.estado === "finalizada") {
+    actualizarRanking();
     fase.value = "terminada";
     return;
   }
@@ -100,6 +113,7 @@ function realizarAtaqueJugador(ataqueId) {
   describirUltimoAtaque();
 
   if (batallaStore.estado === "finalizada") {
+    actualizarRanking();
     fase.value = "terminada";
     return;
   }

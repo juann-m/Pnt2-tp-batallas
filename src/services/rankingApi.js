@@ -1,24 +1,26 @@
 // este service simula el ranking de usuarios usando localStorage.
 // a diferencia de usuariosApi.js (que consume Mockachino), acá no usamos una API externa
 // porque Mockachino no persiste los POST de verdad, y el ranking necesita guardar
-// el mejor puntaje real de cada usuario.
+// los puntos reales de cada usuario.
 //
-// el ranking NO guarda cada partida suelta: guarda, por usuario, su PUNTAJE MÁXIMO histórico
-// (cantidad de victorias logradas en una misma sesión de batallas, con tope de 3
-// porque hay 4 pokemones en total = 3 rivales posibles para enfrentar).
+// el ranking guarda, por usuario, sus PUNTOS ACUMULADOS: cada victoria suma 1 punto,
+// para siempre. No hay tope máximo y no se resetea al perder, así siempre se puede
+// ver claramente quién tiene más puntos (y el ranking crece con cada batalla ganada).
 
 const CLAVE_RANKING = "ranking"
 
 // datos mockeados de ejemplo, para que la vista no arranque vacía
-// mientras no exista todavía la pantalla de batalla que genere resultados reales
+// mientras no exista todavía la pantalla de batalla que genere resultados reales.
+// usamos los usuarios REALES de Mockachino (juan, ash, misty) para que cualquiera
+// de ellos pueda loguearse y seguir sumando puntos sobre esta base.
 const RANKING_MOCKEADO = [
-  { usuario: "Juan", puntajeMaximo: 2, fecha: "2026-10-10" },
-  { usuario: "Maria", puntajeMaximo: 3, fecha: "2026-10-12" },
-  { usuario: "Pedro", puntajeMaximo: 1, fecha: "2026-10-15" }
+  { usuario: "Juan", puntos: 5, fecha: "2026-10-10" },
+  { usuario: "Ash", puntos: 8, fecha: "2026-10-12" },
+  { usuario: "Misty", puntos: 3, fecha: "2026-10-15" }
 ]
 
 function ordenarPorPuntaje(registroA, registroB) {
-  return registroB.puntajeMaximo - registroA.puntajeMaximo
+  return registroB.puntos - registroA.puntos
 }
 
 // obtiene el ranking guardado, ordenado de mayor a menor puntaje.
@@ -31,15 +33,19 @@ export function obtenerRanking() {
     return [...RANKING_MOCKEADO].sort(ordenarPorPuntaje)
   }
 
-  const ranking = JSON.parse(rankingGuardado)
+  // normalizamos por si quedó algún registro viejo (del modelo anterior con
+  // puntajeMaximo) o corrupto, para que nunca se rompa ni se vea "vacío"
+  const ranking = JSON.parse(rankingGuardado).map((registro) => ({
+    ...registro,
+    puntos: Number.isFinite(registro.puntos) ? registro.puntos : 0
+  }))
   return ranking.sort(ordenarPorPuntaje)
 }
 
-// registra el resultado de una sesión de batallas para un usuario.
-// si el usuario no tiene registro previo, lo crea.
-// si ya tiene uno, solo lo actualiza cuando el nuevo puntaje es MAYOR al guardado
-// (si jugó peor que su mejor marca, esa marca anterior se conserva).
-export function registrarResultado(usuario, puntajeSesion) {
+// suma 1 punto al usuario por ganar una batalla. Si el usuario no tiene
+// registro previo, lo crea arrancando en 1 punto. Los puntos nunca bajan
+// ni se resetean: se acumulan para siempre, batalla ganada tras batalla ganada.
+export function sumarPunto(usuario) {
   const rankingGuardado = localStorage.getItem(CLAVE_RANKING)
   const ranking = rankingGuardado ? JSON.parse(rankingGuardado) : [...RANKING_MOCKEADO]
 
@@ -51,11 +57,15 @@ export function registrarResultado(usuario, puntajeSesion) {
   if (!registroExistente) {
     ranking.push({
       usuario: usuario,
-      puntajeMaximo: puntajeSesion,
+      puntos: 1,
       fecha: fechaActual
     })
-  } else if (puntajeSesion > registroExistente.puntajeMaximo) {
-    registroExistente.puntajeMaximo = puntajeSesion
+  } else {
+    // si puntos no es un número válido (registro viejo o corrupto), arrancamos de 0
+    const puntosActuales = Number.isFinite(registroExistente.puntos)
+      ? registroExistente.puntos
+      : 0
+    registroExistente.puntos = puntosActuales + 1
     registroExistente.fecha = fechaActual
   }
 

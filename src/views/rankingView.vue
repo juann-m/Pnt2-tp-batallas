@@ -48,7 +48,7 @@ onMounted(() => {
           <tr>
             <th>Puesto</th>
             <th>Usuario</th>
-            <th>Mejor puntaje</th>
+            <th>Puntos</th>
             <th>Fecha</th>
           </tr>
         </thead>
@@ -56,7 +56,7 @@ onMounted(() => {
           <tr v-for="(registro, indice) in ranking" :key="registro.usuario">
             <td>{{ indice + 1 }}</td>
             <td>{{ registro.usuario }}</td>
-            <td>{{ registro.puntajeMaximo }} / 3</td>
+            <td>{{ registro.puntos }}</td>
             <td>{{ registro.fecha }}</td>
           </tr>
         </tbody>
