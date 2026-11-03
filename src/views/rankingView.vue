@@ -1,20 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { useAuthStore } from "@/stores/auth"
+import { useCerrarSesion } from "@/composables/useCerrarSesion"
 import { obtenerRanking } from "../services/rankingApi"
 
-const router = useRouter()
-const authStore = useAuthStore()
+const { cerrarSesion, usuario } = useCerrarSesion()
 
 const ranking = ref([])
 const cargando = ref(true)
 const error = ref("")
-
-function cerrarSesion() {
-  authStore.logout() // Pinia limpia estado + localStorage
-  router.push("/") // volvés al login
-}
 
 onMounted(() => {
   try {
@@ -34,7 +27,7 @@ onMounted(() => {
 
       <div class="sesion">
         <router-link to="/seleccionPokemon">Volver</router-link>
-        <span v-if="authStore.usuario">Hola, {{ authStore.usuario }}</span>
+        <span v-if="usuario">Hola, {{ usuario }}</span>
         <button type="button" @click="cerrarSesion">Cerrar sesión</button>
       </div>
     </header>
@@ -127,4 +120,3 @@ main {
   border-bottom: none;
 }
 </style>
-

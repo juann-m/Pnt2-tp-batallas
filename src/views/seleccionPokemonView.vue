@@ -6,7 +6,7 @@ import { obtenerDatosPokemon } from "../services/pokemonApi.js";
 import { PokemonSeleccionable } from "../models/pokemonSeleccionable.js";
 import ataquesPorPokemon from "../data/ataquesPorPokemon.json";
 import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
+import { useCerrarSesion } from "@/composables/useCerrarSesion";
 
 const pokemonesSeleccionables = ref([]);
 const pokemonSeleccionado = ref(null);
@@ -15,12 +15,7 @@ const error = ref("");
 const ESCALA_ESTADISTICAS = 100;
 
 const router = useRouter();
-const authStore = useAuthStore();
-
-function cerrarSesion() {
-  authStore.logout(); // Pinia limpia estado + localStorage
-  router.push("/"); // volvés al login
-}
+const { cerrarSesion, usuario } = useCerrarSesion();
 
 onMounted(async () => {
   try {
@@ -92,7 +87,7 @@ function irASeleccionPokemonRival() {
 
       <div class="sesion">
         <router-link to="/ranking">Ver ranking</router-link>
-        <span v-if="authStore.usuario">Hola, {{ authStore.usuario }}</span>
+        <span v-if="usuario">Hola, {{ usuario }}</span>
         <button type="button" @click="cerrarSesion">Cerrar sesión</button>
       </div>
     </header>

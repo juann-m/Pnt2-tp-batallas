@@ -2,13 +2,17 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useBatallaStore } from "@/stores/batallaStore";
-import { useAuthStore } from "@/stores/auth";
+import { useCerrarSesion } from "@/composables/useCerrarSesion";
+import { claseBarraVida, porcentajeVida } from "@/helpers/batalla";
 import { obtenerDatosPokemon } from "@/services/pokemonApi.js";
 import ataques from "@/data/ataques.json";
 
 const router = useRouter();
 const batallaStore = useBatallaStore();
-const authStore = useAuthStore();
+const {
+  cerrarSesion: cerrarSesionUsuario,
+  usuario,
+} = useCerrarSesion();
 
 const fase = ref("cargando");
 const mensajeBatalla = ref("Preparando la batalla...");
@@ -103,17 +107,6 @@ function realizarAtaqueJugador(ataqueId) {
   programarAtaqueRival();
 }
 
-function porcentajeVida(pokemon) {
-  if (!pokemon || pokemon.vidaMaxima === 0) return 0;
-  return Math.max(0, (pokemon.vidaActual / pokemon.vidaMaxima) * 100);
-}
-
-function claseBarraVida(pokemon) {
-  if (porcentajeVida(pokemon) <= 25) return "vida-baja";
-  if (porcentajeVida(pokemon) <= 50) return "vida-media";
-  return "vida-alta";
-}
-
 function volverASeleccion() {
   batallaStore.$reset();
   router.push("/seleccionPokemon");
@@ -121,8 +114,7 @@ function volverASeleccion() {
 
 function cerrarSesion() {
   batallaStore.$reset();
-  authStore.logout();
-  router.push("/");
+  cerrarSesionUsuario();
 }
 
 // Inicialización de la vista
@@ -191,8 +183,8 @@ onBeforeUnmount(() => {
       <h1>Batalla Pokémon</h1>
 
       <div class="sesion">
-        <span v-if="authStore.usuario">
-          Hola, {{ authStore.usuario }}
+        <span v-if="usuario">
+          Hola, {{ usuario }}
         </span>
 
         <button
@@ -381,126 +373,3 @@ onBeforeUnmount(() => {
     </section>
   </main>
 </template>
-
-<style scoped>
-.pantalla-batalla { width: min(100%, 1050px); margin: 0 auto; color: var(--texto, #2b2b2b); font-family: "Segoe UI", system-ui, sans-serif; }
-.pantalla-batalla :deep(.barra-superior) { margin: -12px -12px 20px; }
-.barra-superior, .sesion { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.arena {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 16px;
-  min-height: 470px;
-  padding: 20px;
-  border: 5px solid var(--poke-amarillo, #ffcb05);
-  border-radius: 20px;
-  background: linear-gradient(
-    180deg,
-    #e6f1f8 0 49%,
-    #c8e0b7 49% 100%
-  );
-}
-
-.tarjeta-rival {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.tarjeta-jugador {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.panel-acciones {
-  box-sizing: border-box;
-  grid-column: 2;
-  grid-row: 2;
-  align-self: stretch;
-  min-width: 0;
-  margin: 0;
-  padding: 14px;
-  border: 2px solid #d9d9d9;
-  border-radius: 16px;
-  background: rgb(255 255 255 / 94%);
-  box-shadow: 0 6px 18px rgb(32 48 64 / 12%);
-}
-
-.panel-acciones h2 {
-  margin: 0 0 10px;
-  font-size: 1.15rem;
-}
-
-.mensaje-batalla {
-  margin: 0 0 10px;
-  padding: 8px 10px;
-  border-left: 4px solid var(--poke-azul, #2a75bb);
-  border-radius: 6px;
-  background: #f2f7fb;
-  font-size: 0.82rem;
-}
-
-.lista-ataques {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.boton-ataque {
-  display: flex;
-  min-width: 0;
-  min-height: 55px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  margin: 0;
-  padding: 9px 10px;
-  border: 2px solid #d9d9d9;
-  background: #fff;
-  color: inherit;
-  text-align: left;
-}
-
-.boton-ataque strong {
-  font-size: 0.88rem;
-}
-
-.boton-ataque span {
-  color: #606c74;
-  font-size: 0.7rem;
-  text-transform: capitalize;
-}
-.tarjeta { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 0; padding: 18px; border: 2px solid #d9d9d9; border-radius: 16px; background: rgb(255 255 255 / 94%); box-shadow: 0 6px 18px rgb(32 48 64 / 12%); }
-.tarjeta-rival { grid-column: 2; grid-row: 1; }
-.tarjeta-jugador { grid-column: 1; grid-row: 2; }
-.datos-pokemon { flex: 1; min-width: 0; }
-.etiqueta { margin: 0 0 5px; color: var(--poke-azul, #2a75bb); font-size: .76rem; font-weight: 800; letter-spacing: 1px; }
-h2 { margin: 0 0 7px; }
-.tipo-pokemon { display: inline-block; padding: 4px 10px; border-radius: 999px; background: #e7f0fa; color: #3c5aa6; font-size: .82rem; text-transform: capitalize; }
-.vida-pokemon { margin-top: 18px; }
-.texto-vida { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 7px; font-size: .78rem; }
-.fondo-vida { height: 13px; overflow: hidden; border: 1px solid #cbd3d8; border-radius: 999px; background: #e8edf0; }
-.barra-vida { height: 100%; border-radius: inherit; transition: width 400ms ease; }
-.vida-alta { background: #45b85c; }
-.vida-media { background: #f0b52c; }
-.vida-baja { background: #e44e4e; }
-.tarjeta img, .sin-imagen { flex: 0 0 130px; width: 130px; height: 130px; object-fit: contain; }
-.tarjeta img { filter: drop-shadow(0 8px 6px rgb(0 0 0 / 18%)); }
-.imagen-jugador { transform: scaleX(-1); }
-.sin-imagen { display: grid; place-items: center; border-radius: 50%; background: #eef2f4; color: #7b8991; font-size: 2.5rem; font-weight: 800; }
-.mensaje-batalla { margin: 0 0 16px; padding: 12px 16px; border-left: 4px solid var(--poke-azul, #2a75bb); background: #f2f7fb; }
-.lista-ataques { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.boton-ataque { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-height: 68px; margin: 0; padding: 12px 14px; border: 2px solid #d9d9d9; background: #fff; color: inherit; text-align: left; }
-.boton-ataque:disabled { cursor: not-allowed; opacity: .6; }
-.boton-ataque span { color: #606c74; font-size: .78rem; text-transform: capitalize; }
-.estado-batalla, .resultado-batalla { text-align: center; }
-.boton-volver { margin: 0; background: var(--poke-amarillo, #ffcb05); color: #2b2b2b; }
-@media (max-width: 700px) {
-  .pantalla-batalla :deep(.barra-superior) { margin-right: -12px; margin-left: -12px; }
-  .arena { grid-template-columns: 1fr; grid-template-rows: auto auto; gap: 16px; min-height: auto; padding: 14px; }
-  .tarjeta-rival, .tarjeta-jugador { grid-column: 1; grid-row: auto; }
-  .tarjeta { min-height: 170px; padding: 12px; }
-  .tarjeta img, .sin-imagen { flex-basis: 95px; width: 95px; height: 95px; }
-  .lista-ataques { grid-template-columns: 1fr; }
-}
-</style>
