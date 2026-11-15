@@ -1,14 +1,11 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import personajes from "../data/personajes.json";
-import ataquesPorPokemon from "../data/ataquesPorPokemon.json";
-import { obtenerDatosPokemon } from "../services/pokemonApi.js";
-import { PokemonSeleccionable } from "../models/pokemonSeleccionable.js";
+import { useRouter } from "vue-router";
+import { usePokemonStore } from "../stores/pokemonStore";
 import { useBatallaStore } from "../stores/batallaStore";
 
-const route = useRoute();
 const router = useRouter();
+const pokemonStore = usePokemonStore();
 const batallaStore = useBatallaStore();
 
 const pokemonJugador = ref(null);
@@ -23,31 +20,13 @@ const error = ref("");
 let intervalo = null;
 let temporizador = null;
 
-onMounted(async () => {
+onMounted(() => {
   try {
-    const pokemones = [];
+    const pokemones = pokemonStore.pokemones;
+    pokemonJugador.value = pokemonStore.pokemonJugador;
 
-    for (const nombrePokemon of personajes) {
-      const datosPokemon = await obtenerDatosPokemon(nombrePokemon);
-      const ataques = ataquesPorPokemon[nombrePokemon];
-
-      const pokemon = new PokemonSeleccionable(
-        datosPokemon,
-        ataques,
-      );
-
-      pokemones.push(pokemon);
-    }
-
-    // Obtener el ID del Pokémon seleccionado desde la query.
-    const idJugador = route.query.pokemonJugador;
-
-    pokemonJugador.value = pokemones.find(
-      (pokemon) => pokemon.id === idJugador,
-    );
-
-    if (!pokemonJugador.value) {
-      error.value = "No se encontró el Pokémon que seleccionaste.";
+    if (pokemones.length === 0 || !pokemonJugador.value) {
+      error.value = "No se encontró el catálogo o el Pokémon que seleccionaste. Volvé a la selección.";
       return;
     }
 
