@@ -4,7 +4,6 @@ import { useRouter } from "vue-router";
 import { useBatallaStore } from "@/stores/batallaStore";
 import { useCerrarSesion } from "@/composables/useCerrarSesion";
 import { claseBarraVida, porcentajeVida } from "@/helpers/batalla";
-import { obtenerDatosPokemon } from "@/services/pokemonApi.js";
 import { sumarPunto } from "@/services/rankingApi.js";
 import ataques from "@/data/ataques.json";
 
@@ -17,12 +16,12 @@ const {
 
 const fase = ref("cargando");
 const mensajeBatalla = ref("Preparando la batalla...");
-const imagenJugador = ref("");
-const imagenRival = ref("");
 let temporizador = null;
 
 const pokemonJugador = computed(() => batallaStore.pokemonJugador);
 const pokemonRival = computed(() => batallaStore.pokemonRival);
+const imagenJugador = computed(() => pokemonJugador.value?.imagen || "");
+const imagenRival = computed(() => pokemonRival.value?.imagen || "");
 
 const ataquesDelJugador = computed(() => {
   if (!pokemonJugador.value) return [];
@@ -31,30 +30,6 @@ const ataquesDelJugador = computed(() => {
     .map((ataqueId) => ataques.find((ataque) => ataque.id === ataqueId))
     .filter((ataque) => ataque !== undefined);
 });
-
-function obtenerImagen(datosPokemon) {
-  return (
-    datosPokemon.sprites.other?.["official-artwork"]?.front_default ||
-    datosPokemon.sprites.front_default ||
-    ""
-  );
-}
-
-async function cargarImagenes() {
-  try {
-    const datos = await obtenerDatosPokemon(pokemonJugador.value.nombre.toLowerCase());
-    imagenJugador.value = obtenerImagen(datos);
-  } catch (error) {
-    console.error("No se pudo cargar la imagen de tu Pokémon.", error);
-  }
-
-  try {
-    const datos = await obtenerDatosPokemon(pokemonRival.value.nombre.toLowerCase());
-    imagenRival.value = obtenerImagen(datos);
-  } catch (error) {
-    console.error("No se pudo cargar la imagen del rival.", error);
-  }
-}
 
 function describirUltimoAtaque() {
   const ultimoTurno = batallaStore.registroTurnos.at(-1);
@@ -134,48 +109,15 @@ function cerrarSesion() {
 // Inicialización de la vista
 // si no hay Pokémon seleccionados o la batalla no está en curso, redirige a la selección de Pokémon
 
-onMounted(async () => {
-  if (!pokemonJugador.value || !pokemonRival.value) {
-    batallaStore.iniciarBatalla(
-      {
-        id: "prueba-jugador",
-        nombre: "Pikachu",
-        tipo: "eléctrico",
-        vidaMaxima: 100,
-        ataque: 52,
-        defensa: 43,
-       ataquesDisponibles: [
-                                "ataque_impactrueno",
-                                "ataque_placaje",
-                                "ataque_rayo",
-                                "ataque_rapido",
-                              ],
-      },
-      {
-        id: "prueba-rival",
-        nombre: "Charmander",
-        tipo: "fuego",
-        vidaMaxima: 100,
-        ataque: 52,
-        defensa: 43,
-        ataquesDisponibles: [
-                                "ataque_ascuas",
-                                "ataque_placaje",
-                                "ataque_cuchillada",
-                                "ataque_giro_fuego",
-                              ],
-      
-      }
-    );
-    
-  }
-
-  if (batallaStore.estado !== "en_curso") {
+onMounted(() => {
+  if (
+    !pokemonJugador.value ||
+    !pokemonRival.value ||
+    batallaStore.estado !== "en_curso"
+  ) {
     router.replace("/seleccionPokemon");
     return;
   }
-
-  await cargarImagenes();
 
   if (batallaStore.turnoActual === "rival") {
     mensajeBatalla.value = "El rival comienza la batalla.";
