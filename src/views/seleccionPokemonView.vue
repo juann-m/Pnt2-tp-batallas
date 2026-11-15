@@ -23,6 +23,7 @@ onMounted(async () => {
   try {
     if (pokemonStore.pokemones.length > 0) {
       pokemonesSeleccionables.value = pokemonStore.pokemones;
+      pokemonSeleccionado.value = pokemonStore.pokemonJugador;
     } else {
       const pokemones = [];
 
