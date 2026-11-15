@@ -7,6 +7,7 @@ import { PokemonSeleccionable } from "../models/pokemonSeleccionable.js";
 import ataquesPorPokemon from "../data/ataquesPorPokemon.json";
 import { useRouter } from "vue-router";
 import { useCerrarSesion } from "@/composables/useCerrarSesion";
+import { usePokemonStore } from "@/stores/pokemonStore";
 
 const pokemonesSeleccionables = ref([]);
 const pokemonSeleccionado = ref(null);
@@ -15,16 +16,26 @@ const error = ref("");
 const ESCALA_ESTADISTICAS = 100;
 
 const router = useRouter();
+const pokemonStore = usePokemonStore();
 const { cerrarSesion, usuario } = useCerrarSesion();
 
 onMounted(async () => {
   try {
-    for (const nombrePokemon of personajes) {
-      const datosPokemon = await obtenerDatosPokemon(nombrePokemon);
-      const ataques = ataquesPorPokemon[nombrePokemon];
+    if (pokemonStore.pokemones.length > 0) {
+      pokemonesSeleccionables.value = pokemonStore.pokemones;
+    } else {
+      const pokemones = [];
 
-      const pokemon = new PokemonSeleccionable(datosPokemon, ataques);
-      pokemonesSeleccionables.value.push(pokemon);
+      for (const nombrePokemon of personajes) {
+        const datosPokemon = await obtenerDatosPokemon(nombrePokemon);
+        const ataques = ataquesPorPokemon[nombrePokemon];
+        const pokemon = new PokemonSeleccionable(datosPokemon, ataques);
+
+        pokemones.push(pokemon);
+      }
+
+      pokemonStore.guardarCatalogo(pokemones);
+      pokemonesSeleccionables.value = pokemonStore.pokemones;
     }
   } catch (errorRecibido) {
     error.value = errorRecibido.message;
@@ -35,6 +46,7 @@ onMounted(async () => {
 
 function seleccionarPokemon(pokemon) {
   pokemonSeleccionado.value = pokemon;
+  pokemonStore.seleccionarPokemonJugador(pokemon);
 }
 
 const estadisticasSeleccionadas = computed(function () {
@@ -71,10 +83,8 @@ function irASeleccionPokemonRival() {
     return;
   }
 
-  router.push({
-    path: "/seleccionPokemonRival",
-    query: { pokemonJugador: String(pokemon.id) },
-  });
+  pokemonStore.seleccionarPokemonJugador(pokemon);
+  router.push("/seleccionPokemonRival");
 }
 
 
