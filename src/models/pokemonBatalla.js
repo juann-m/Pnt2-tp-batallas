@@ -9,6 +9,7 @@ export class pokemonBatalla {
     this.ataque = personajeOriginal.ataque
     this.defensa = personajeOriginal.defensa
     this.velocidad = personajeOriginal.velocidad
+    this.imagen = personajeOriginal.imagen
 
     this.ataquesDisponibles = [
       ...personajeOriginal.ataquesDisponibles
