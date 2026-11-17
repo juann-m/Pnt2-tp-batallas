@@ -7,24 +7,38 @@ import { PokemonSeleccionable } from "../models/pokemonSeleccionable.js";
 import ataquesPorPokemon from "../data/ataquesPorPokemon.json";
 import { useRouter } from "vue-router";
 import { useCerrarSesion } from "@/composables/useCerrarSesion";
+import { usePokemonStore } from "@/stores/pokemonStore";
 
 const pokemonesSeleccionables = ref([]);
-const pokemonSeleccionado = ref(null);
+const pokemonStore = usePokemonStore();
+const pokemonSeleccionado =computed(() => pokemonStore.pokemonJugador);
 const cargando = ref(true);
 const error = ref("");
 const ESCALA_ESTADISTICAS = 100;
-
 const router = useRouter();
 const { cerrarSesion, usuario } = useCerrarSesion();
 
+
+
+
+// el if dentro de onMounted evita que se haga la llamada a la API si ya hay pokemones en el store.
 onMounted(async () => {
   try {
-    for (const nombrePokemon of personajes) {
-      const datosPokemon = await obtenerDatosPokemon(nombrePokemon);
-      const ataques = ataquesPorPokemon[nombrePokemon];
+    if (pokemonStore.pokemones.length > 0) {
+      pokemonesSeleccionables.value = pokemonStore.pokemones;
+    } else {
+      const pokemones = [];
 
-      const pokemon = new PokemonSeleccionable(datosPokemon, ataques);
-      pokemonesSeleccionables.value.push(pokemon);
+      for (const nombrePokemon of personajes) {
+        const datosPokemon = await obtenerDatosPokemon(nombrePokemon);
+        const ataques = ataquesPorPokemon[nombrePokemon];
+        const pokemon = new PokemonSeleccionable(datosPokemon, ataques);
+        // Guardar el Pokémon en el array de "pokemones"
+        pokemones.push(pokemon);
+      }
+      // Guardar el catálogo de Pokémon en el store y actualizar la lista de pokemonesSeleccionables
+      pokemonStore.guardarCatalogo(pokemones);
+      pokemonesSeleccionables.value = pokemonStore.pokemones;
     }
   } catch (errorRecibido) {
     error.value = errorRecibido.message;
@@ -33,10 +47,15 @@ onMounted(async () => {
   }
 });
 
-function seleccionarPokemon(pokemon) {
-  pokemonSeleccionado.value = pokemon;
-}
+// Función para seleccionar un Pokémon y guardarlo en el store
 
+function seleccionarPokemon(pokemon) {
+// Guardar el Pokémon seleccionado en el store
+   pokemonStore.seleccionarPokemonJugador(pokemon);
+}
+// estadisticasSeleccionadas es una propiedad computada que devuelve un arreglo de objetos con el nombre, 
+// valor y porcentaje de cada estadística del Pokémon seleccionado. 
+// Si no hay un Pokémon seleccionado, devuelve un arreglo vacío.
 const estadisticasSeleccionadas = computed(function () {
   const pokemon = pokemonSeleccionado.value;
 
@@ -71,10 +90,7 @@ function irASeleccionPokemonRival() {
     return;
   }
 
-  router.push({
-    path: "/seleccionPokemonRival",
-    query: { pokemonJugador: String(pokemon.id) },
-  });
+  router.push("/seleccionPokemonRival");
 }
 
 
